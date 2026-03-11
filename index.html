@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreshTrack | Green Grocer Dashboard</title>
+    <title>FreshTrack Pro | Grocer Command</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -11,240 +11,218 @@
     <style>
         :root {
             --primary: #2ecc71;
-            --primary-dark: #27ae60;
-            --secondary: #f39c12; /* Carrot Orange */
-            --danger: #e74c3c; /* Tomato Red */
-            --bg-main: #f8fafc;
-            --sidebar: #ffffff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+            --primary-dark: #21a359;
+            --secondary: #f39c12;
+            --danger: #ef4444;
+            --bg-main: #f1f5f9;
+            --sidebar: #0f172a;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--bg-main); color: var(--text-dark); display: flex; min-height: 100vh; }
+        body { background: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; }
 
-        /* Sidebar Navigation */
+        /* Sidebar */
         aside {
             width: 260px;
             background: var(--sidebar);
-            border-right: 1px solid #e2e8f0;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1.2rem;
             display: flex;
             flex-direction: column;
+            color: white;
             position: sticky;
             top: 0;
             height: 100vh;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 3rem;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px;
-            color: var(--text-light);
+            padding: 14px;
+            color: #94a3b8;
             text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            transition: 0.3s;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: 0.2s;
         }
 
         .nav-link.active, .nav-link:hover {
-            background: rgba(46, 204, 113, 0.1);
-            color: var(--primary-dark);
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--primary);
         }
 
         /* Main Workspace */
-        main { flex: 1; padding: 2.5rem; overflow-x: hidden; }
+        main { flex: 1; padding: 2rem; overflow-y: auto; }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        /* Stats Grid */
-        .stats-row {
+        /* Cards & Bento */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: white;
+            background: var(--card-bg);
             padding: 1.5rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            border: 1px solid #f1f5f9;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        .stat-card h3 { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; }
-        .stat-card .value { font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
-        .stat-card .trend { font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
-        .trend.up { color: var(--primary); }
+        .stat-card .icon-box {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem;
+        }
 
-        /* Dashboard Layout */
-        .grid-layout {
+        /* Dashboard Grid */
+        .layout-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1.6fr 1fr;
             gap: 1.5rem;
         }
 
-        .content-box {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
+        .content-card {
+            background: var(--card-bg);
+            padding: 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
         }
 
-        /* Charts & Lists */
-        .filter-btn {
-            background: #f1f5f9;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .filter-btn.active { background: var(--primary-dark); color: white; }
-
-        .inventory-list { margin-top: 1rem; }
+        /* Custom Table & Items */
+        .item-list { margin-top: 1rem; }
         .item-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid #f1f5f9;
         }
 
-        .item-img { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
+        .img-thumb { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }
 
-        .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .btn-group { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; }
+        .btn-toggle {
+            padding: 6px 16px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; background: transparent; color: var(--text-muted);
         }
-        .badge-low { background: #fee2e2; color: var(--danger); }
-        .badge-ok { background: #dcfce7; color: var(--primary-dark); }
+        .btn-toggle.active { background: white; color: var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        @media (max-width: 1024px) {
-            .grid-layout { grid-template-columns: 1fr; }
-            aside { width: 80px; padding: 1.5rem 0.5rem; }
-            aside .logo span, aside .nav-link span { display: none; }
-        }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .low { background: #fee2e2; color: #ef4444; }
+        .good { background: #dcfce7; color: #22c55e; }
+
+        @media (max-width: 1100px) { .layout-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <aside>
-        <div class="logo">
-            <i data-lucide="leaf"></i> <span>FreshTrack</span>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 3rem; font-weight: 700; font-size: 1.4rem;">
+            <i data-lucide="shopping-cart" style="color: var(--primary);"></i> FreshTrack
         </div>
         <nav>
-            <a href="#" class="nav-link active"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
-            <a href="#" class="nav-link"><i data-lucide="shopping-basket"></i> <span>Inventory</span></a>
-            <a href="#" class="nav-link"><i data-lucide="line-chart"></i> <span>Sales Reports</span></a>
-            <a href="#" class="nav-link"><i data-lucide="truck"></i> <span>Suppliers</span></a>
-            <a href="#" class="nav-link"><i data-lucide="settings"></i> <span>Settings</span></a>
+            <a href="#" class="nav-link active"><i data-lucide="pie-chart"></i> Dashboard</a>
+            <a href="#" class="nav-link"><i data-lucide="package"></i> Stock Management</a>
+            <a href="#" class="nav-link"><i data-lucide="users"></i> Customers</a>
+            <a href="#" class="nav-link"><i data-lucide="file-text"></i> Invoices</a>
+            <a href="#" class="nav-link"><i data-lucide="settings"></i> System</a>
         </nav>
     </aside>
 
     <main>
         <header class="header">
             <div>
-                <h1 style="font-size: 1.8rem;">Sales Overview</h1>
-                <p style="color: var(--text-light);">Market St. Branch • March 11, 2026</p>
+                <h1 style="font-size: 1.8rem; font-weight: 700;">Market Analytics</h1>
+                <p style="color: var(--text-muted);">Real-time performance for Market St. Branch</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="filter-btn active" onclick="updateChart('daily')">Daily</button>
-                <button class="filter-btn" onclick="updateChart('monthly')">Monthly</button>
-                <button class="filter-btn" onclick="updateChart('yearly')">Yearly</button>
+            <div class="btn-group">
+                <button class="btn-toggle active" onclick="changeView('daily', this)">Daily</button>
+                <button class="btn-toggle" onclick="changeView('monthly', this)">Monthly</button>
+                <button class="btn-toggle" onclick="changeView('yearly', this)">Yearly</button>
             </div>
         </header>
 
-        <div class="stats-row">
+        <div class="stats-grid">
             <div class="stat-card">
-                <h3>Total Sales</h3>
-                <div class="value">$4,280.50</div>
-                <div class="trend up"><i data-lucide="arrow-up-right"></i> +14% vs last period</div>
+                <div class="icon-box" style="background: rgba(46, 204, 113, 0.1); color: var(--primary);"><i data-lucide="trending-up"></i></div>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Total Revenue</span>
+                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 5px;">$8,421.50</div>
+                <div style="color: #22c55e; font-size: 0.8rem; margin-top: 8px;">↑ 12.5% vs last week</div>
             </div>
             <div class="stat-card">
-                <h3>Total Purchase</h3>
-                <div class="value">$1,150.00</div>
-                <div class="trend" style="color: var(--text-light);">Inventory Restock</div>
+                <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="shopping-bag"></i></div>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Procurement Cost</span>
+                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 5px;">$2,840.00</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 8px;">Stock restock pending</div>
             </div>
             <div class="stat-card">
-                <h3>Customer Count</h3>
-                <div class="value">142</div>
-                <div class="trend up"><i data-lucide="users"></i> New peak reached</div>
-            </div>
-            <div class="stat-card">
-                <h3>Avg. Basket</h3>
-                <div class="value">$30.15</div>
-                <div class="trend up"><i data-lucide="trending-up"></i> Improved</div>
+                <div class="icon-box" style="background: rgba(243, 156, 18, 0.1); color: var(--secondary);"><i data-lucide="alert-circle"></i></div>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Spoilage/Waste</span>
+                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 5px;">$142.20</div>
+                <div style="color: var(--danger); font-size: 0.8rem; margin-top: 8px;">Critical: Bananas & Grapes</div>
             </div>
         </div>
 
-        <div class="grid-layout">
-            <div class="content-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h2 style="font-size: 1.1rem;">Revenue Performance</h2>
-                    <i data-lucide="more-horizontal" style="color: var(--text-light); cursor: pointer;"></i>
+        <div class="layout-grid">
+            <div class="content-card">
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.2rem;">Revenue vs Purchase Trends</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Comparing income to stock investment</p>
                 </div>
-                <canvas id="salesChart" height="250"></canvas>
+                <div style="height: 350px;">
+                    <canvas id="performanceChart"></canvas>
+                </div>
             </div>
 
-            <div class="content-box">
-                <h2 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Inventory Alerts</h2>
-                <div class="inventory-list">
+            <div class="content-card">
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Stock Status</h2>
+                <div class="item-list">
                     <div class="item-row">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?w=100" class="item-img" alt="Oranges">
-                            <div>
-                                <p style="font-weight: 600; font-size: 0.9rem;">Navel Oranges</p>
-                                <p style="font-size: 0.8rem; color: var(--text-light);">4kg left</p>
-                            </div>
+                            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=100&q=80" class="img-thumb" alt="Potato">
+                            <div><p style="font-weight: 600;">Idaho Potatoes</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 450kg</p></div>
                         </div>
-                        <span class="badge badge-low">Low Stock</span>
+                        <span class="badge good">In Stock</span>
                     </div>
-
                     <div class="item-row">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=100" class="item-img" alt="Potatoes">
-                            <div>
-                                <p style="font-weight: 600; font-size: 0.9rem;">Russet Potatoes</p>
-                                <p style="font-size: 0.8rem; color: var(--text-light);">120kg left</p>
-                            </div>
+                            <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=100&q=80" class="img-thumb" alt="Tomato">
+                            <div><p style="font-weight: 600;">Organic Tomatoes</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 12kg</p></div>
                         </div>
-                        <span class="badge badge-ok">Healthy</span>
+                        <span class="badge low">Low Stock</span>
                     </div>
-
                     <div class="item-row">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?w=100" class="item-img" alt="Broccoli">
-                            <div>
-                                <p style="font-weight: 600; font-size: 0.9rem;">Fresh Broccoli</p>
-                                <p style="font-size: 0.8rem; color: var(--text-light);">2kg left</p>
-                            </div>
+                            <img src="https://images.unsplash.com/photo-1464960350423-9f886830e105?w=100&q=80" class="img-thumb" alt="Strawberry">
+                            <div><p style="font-weight: 600;">Strawberries</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 8 boxes</p></div>
                         </div>
-                        <span class="badge badge-low">Reorder</span>
+                        <span class="badge low">Critical</span>
+                    </div>
+                    <div class="item-row">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=100&q=80" class="img-thumb" alt="Avocado">
+                            <div><p style="font-weight: 600;">Hass Avocado</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 85 units</p></div>
+                        </div>
+                        <span class="badge good">In Stock</span>
+                    </div>
+                    <div class="item-row">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img src="https://images.unsplash.com/photo-1563513331624-382c070fd73b?w=100&q=80" class="img-thumb" alt="Pepper">
+                            <div><p style="font-weight: 600;">Bell Peppers (Mix)</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 40kg</p></div>
+                        </div>
+                        <span class="badge good">In Stock</span>
                     </div>
                 </div>
-                <button style="width: 100%; padding: 12px; margin-top: 1.5rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; cursor: pointer; color: var(--text-light);">View Full Inventory</button>
             </div>
         </div>
     </main>
@@ -252,68 +230,70 @@
     <script>
         lucide.createIcons();
 
-        // Chart Data Configurations
-        const chartData = {
+        const dataSets = {
             daily: {
                 labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'],
-                sales: [120, 450, 800, 600, 950, 1100, 260],
-                purchase: [500, 0, 0, 0, 0, 650, 0]
+                sales: [400, 850, 1200, 900, 1500, 2100, 600],
+                purchases: [1500, 0, 0, 0, 200, 0, 0]
             },
             monthly: {
                 labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                sales: [12000, 15000, 11000, 18000],
-                purchase: [8000, 2000, 5000, 3000]
+                sales: [18000, 22000, 19500, 26000],
+                purchases: [12000, 8000, 15000, 9000]
             },
             yearly: {
                 labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                sales: [54000, 62000, 48000, 75000],
-                purchase: [20000, 18000, 22000, 15000]
+                sales: [120000, 150000, 135000, 190000],
+                purchases: [80000, 90000, 75000, 60000]
             }
         };
 
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        let salesChart = new Chart(ctx, {
-            type: 'bar',
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        let perfChart = new Chart(ctx, {
+            type: 'bar', // Mixed chart
             data: {
-                labels: chartData.daily.labels,
+                labels: dataSets.daily.labels,
                 datasets: [
                     {
-                        label: 'Sales Revenue ($)',
-                        data: chartData.daily.sales,
+                        type: 'bar',
+                        label: 'Sales Revenue',
+                        data: dataSets.daily.sales,
                         backgroundColor: '#2ecc71',
                         borderRadius: 8,
+                        order: 2
                     },
                     {
-                        label: 'Purchasing Cost ($)',
-                        data: chartData.daily.purchase,
-                        backgroundColor: '#cbd5e1',
-                        borderRadius: 8,
+                        type: 'line',
+                        label: 'Purchase Cost',
+                        data: dataSets.daily.purchases,
+                        borderColor: '#94a3b8',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        fill: false,
+                        tension: 0.4,
+                        order: 1
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Outfit' } } }
-                },
+                plugins: { legend: { position: 'bottom' } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Outfit' } } },
-                    x: { grid: { display: false }, ticks: { font: { family: 'Outfit' } } }
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
                 }
             }
         });
 
-        function updateChart(type) {
-            // Update UI buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        function changeView(view, btn) {
+            document.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-            // Update Chart Data
-            salesChart.data.labels = chartData[type].labels;
-            salesChart.data.datasets[0].data = chartData[type].sales;
-            salesChart.data.datasets[1].data = chartData[type].purchase;
-            salesChart.update();
+            perfChart.data.labels = dataSets[view].labels;
+            perfChart.data.datasets[0].data = dataSets[view].sales;
+            perfChart.data.datasets[1].data = dataSets[view].purchases;
+            perfChart.update();
         }
     </script>
 </body>

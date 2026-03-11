@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Web Monster | Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0f2027;
+            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --accent: #00f7ff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --text-main: #ffffff;
+            --text-dim: #a0aec0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 260px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--glass);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav li {
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-dim);
+        }
+
+        nav li:hover, nav li.active {
+            background: var(--glass);
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--glass);
+            padding: 5px 15px;
+            border-radius: 50px;
+            border: 1px solid var(--glass);
+        }
+
+        /* Dashboard Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .card h3 {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .card .trend {
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        .trend.up { color: #4ade80; }
+
+        /* Charts Section */
+        .content-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .chart-container, .table-container {
+            background: var(--glass);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            padding-bottom: 10px;
+        }
+
+        td {
+            padding: 12px 0;
+            border-top: 1px solid var(--glass);
+            font-size: 0.9rem;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .status.active { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+        .status.pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo">
+            <i data-lucide="terminal"></i> RAUF.AI
+        </div>
+        <nav>
+            <ul>
+                <li class="active"><i data-lucide="layout-dashboard"></i> Dashboard</li>
+                <li><i data-lucide="film"></i> Film Projects</li>
+                <li><i data-lucide="code-2"></i> Software Dev</li>
+                <li><i data-lucide="database"></i> AI Research</li>
+                <li><i data-lucide="settings"></i> Settings</li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <header>
+            <div>
+                <h1>Project Overview</h1>
+                <p style="color: var(--text-dim);">Welcome back, Imran.</p>
+            </div>
+            <div class="user-profile">
+                <span>GreenWebMonster</span>
+                <div style="width:35px; height:35px; background:var(--accent); border-radius:50%;"></div>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="card">
+                <h3>Total Code Commits</h3>
+                <div class="value">1,284</div>
+                <div class="trend up">▲ 12% this month</div>
+            </div>
+            <div class="card">
+                <h3>Film Scenes Rendered</h3>
+                <div class="value">42 / 60</div>
+                <div class="trend up">▲ 5 scenes today</div>
+            </div>
+            <div class="card">
+                <h3>Model Accuracy</h3>
+                <div class="value">98.2%</div>
+                <div class="trend up">▲ 0.4% improvement</div>
+            </div>
+            <div class="card">
+                <h3>Active Ventures</h3>
+                <div class="value">03</div>
+                <div class="trend">Stable Performance</div>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <div class="chart-container">
+                <h3>Productivity Trend</h3>
+                <canvas id="productivityChart" height="150"></canvas>
+            </div>
+
+            <div class="table-container">
+                <h3>Live Projects</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Neural Synth</td>
+                            <td>AI Tool</td>
+                            <td><span class="status active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Short: "Echoes"</td>
+                            <td>Film</td>
+                            <td><span class="status pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>Web Scraper Pro</td>
+                            <td>Dev</td>
+                            <td><span class="status active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Automation API</td>
+                            <td>System</td>
+                            <td><span class="status active">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Productivity Chart Initialization
+        const ctx = document.getElementById('productivityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Code Commits',
+                    data: [12, 19, 15, 25, 22, 30, 28],
+                    borderColor: '#00f7ff',
+                    backgroundColor: 'rgba(0, 247, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a0aec0' } },
+                    x: { grid: { display: false }, ticks: { color: '#a0aec0' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

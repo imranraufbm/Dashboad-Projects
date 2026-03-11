@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreshTrack Ultra | Smart Grocer Ecosystem</title>
+    <title>FreshTrack Pro | Grocer Command</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -20,13 +20,20 @@
             --text-main: #1e293b;
             --text-muted: #64748b;
             --sidebar-width: 260px;
-            --sidebar-collapsed: 80px;
+            --sidebar-collapsed: 85px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; transition: 0.3s; }
+        
+        body { 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        /* COLLAPSIBLE SIDEBAR */
+        /* SIDEBAR LOGIC */
         aside {
             width: var(--sidebar-width);
             background: var(--sidebar-bg);
@@ -37,9 +44,8 @@
             position: sticky;
             top: 0;
             height: 100vh;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            white-space: nowrap;
+            transition: width 0.4s cubic-bezier(0.075, 0.82, 0.165, 1);
+            z-index: 1000;
         }
 
         aside.collapsed { width: var(--sidebar-collapsed); }
@@ -50,60 +56,107 @@
             gap: 15px;
             margin-bottom: 3rem;
             cursor: pointer;
+            padding-left: 10px;
         }
 
         .nav-link {
             display: flex; align-items: center; gap: 15px; padding: 14px;
-            color: #94a3b8; text-decoration: none; border-radius: 12px; margin-bottom: 5px; transition: 0.2s;
+            color: #94a3b8; text-decoration: none; border-radius: 12px; 
+            margin-bottom: 5px; transition: 0.2s;
         }
 
-        .nav-link:hover, .nav-link.active { background: rgba(46, 204, 113, 0.15); color: var(--primary); }
+        .nav-link:hover, .nav-link.active { 
+            background: rgba(46, 204, 113, 0.1); 
+            color: var(--primary); 
+        }
 
-        .nav-text { transition: opacity 0.2s; }
-        aside.collapsed .nav-text, aside.collapsed .logo-text { opacity: 0; pointer-events: none; }
+        .nav-text { transition: opacity 0.3s; }
+        aside.collapsed .nav-text, aside.collapsed .logo-text { 
+            display: none;
+        }
 
-        /* MAIN AREA */
-        main { flex: 1; padding: 2rem; overflow-y: auto; }
+        /* CONTENT AREA */
+        main { flex: 1; padding: 2rem; width: 100%; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 2rem; 
+            flex-wrap: wrap;
+            gap: 15px;
+        }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        /* CARDS */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 1.5rem; 
+            margin-bottom: 2rem; 
+        }
 
         .stat-card {
-            background: var(--card-bg); padding: 1.5rem; border-radius: 20px;
+            background: var(--card-bg); 
+            padding: 1.5rem; 
+            border-radius: 20px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .icon-box { 
+            width: 40px; height: 40px; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-bottom: 1rem; 
         }
 
-        .icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-
+        /* GRID SYSTEM */
         .layout-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; }
 
-        .content-card { background: var(--card-bg); padding: 1.8rem; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); }
+        .content-card { 
+            background: var(--card-bg); 
+            padding: 1.8rem; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); 
+        }
 
+        /* BUTTONS */
         .btn-group { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; }
-        .btn-toggle { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; background: transparent; color: var(--text-muted); }
+        
+        .btn-toggle { 
+            padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; 
+            font-size: 0.85rem; font-weight: 600; background: transparent; color: var(--text-muted); 
+        }
+        
         .btn-toggle.active { background: white; color: var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
+        .print-btn {
+            background: var(--primary); color: white; border: none; padding: 10px 20px;
+            border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;
+        }
+
+        /* INVENTORY */
         .item-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
         .img-thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
         
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
-        .low { background: #fee2e2; color: #ef4444; }
-        .good { background: #dcfce7; color: #22c55e; }
+        .low { background: #fee2e2; color: var(--danger); }
+        .good { background: #dcfce7; color: var(--primary-dark); }
 
-        @media (max-width: 1000px) { .layout-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1100px) { .layout-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <aside id="sidebar">
         <div class="sidebar-header" onclick="toggleSidebar()">
-            <i data-lucide="menu" style="color: white; min-width: 24px;"></i>
-            <span class="logo-text" style="font-weight: 700; font-size: 1.2rem;">FreshTrack <span style="color: var(--primary);">UI</span></span>
+            <i data-lucide="menu"></i>
+            <span class="logo-text" style="font-weight: 700; font-size: 1.3rem; margin-left: 10px;">FreshTrack</span>
         </div>
         <nav>
             <a href="#" class="nav-link active"><i data-lucide="layout-dashboard"></i> <span class="nav-text">Dashboard</span></a>
-            <a href="#" class="nav-link"><i data-lucide="package"></i> <span class="nav-text">Stock Management</span></a>
+            <a href="#" class="nav-link"><i data-lucide="shopping-basket"></i> <span class="nav-text">Stock</span></a>
             <a href="#" class="nav-link"><i data-lucide="users"></i> <span class="nav-text">Customers</span></a>
             <a href="#" class="nav-link"><i data-lucide="file-text"></i> <span class="nav-text">Invoices</span></a>
             <a href="#" class="nav-link"><i data-lucide="settings"></i> <span class="nav-text">System</span></a>
@@ -113,316 +166,73 @@
     <main>
         <header class="header">
             <div>
-                <h1 style="font-size: 1.6rem; font-weight: 700;">Market Command</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Branch 01 • <span id="view-indicator">Daily</span></p>
+                <h1 style="font-size: 1.8rem; font-weight: 700;">Executive Overview</h1>
+                <p style="color: var(--text-muted);">Real-time tracking: <span id="view-label">Daily</span></p>
             </div>
-            <div class="btn-group">
-                <button class="btn-toggle active" onclick="changeView('daily', this)">Daily</button>
-                <button class="btn-toggle" onclick="changeView('monthly', this)">Monthly</button>
-                <button class="btn-toggle" onclick="changeView('yearly', this)">Yearly</button>
+            <div style="display: flex; gap: 15px;">
+                <div class="btn-group">
+                    <button class="btn-toggle active" onclick="changeView('daily', this)">Daily</button>
+                    <button class="btn-toggle" onclick="changeView('monthly', this)">Monthly</button>
+                    <button class="btn-toggle" onclick="changeView('yearly', this)">Yearly</button>
+                </div>
+                <button class="print-btn" onclick="window.print()">
+                    <i data-lucide="printer" style="width: 18px;"></i> Print
+                </button>
             </div>
         </header>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="icon-box" style="background: rgba(46, 204, 113, 0.1); color: var(--primary);"><i data-lucide="trending-up"></i></div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">REVENUE</span>
-                <div id="rev-val" style="font-size: 1.5rem; font-weight: 700;">$0</div>
+                <div class="icon-box" style="background: rgba(46, 204, 113, 0.1); color: var(--primary);"><i data-lucide="dollar-sign"></i></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">REVENUE</span>
+                <div id="rev-val" style="font-size: 1.6rem; font-weight: 700; margin-top: 5px;">$0</div>
             </div>
             <div class="stat-card">
-                <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="shopping-cart"></i></div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">PROCUREMENT</span>
-                <div id="cost-val" style="font-size: 1.5rem; font-weight: 700;">$0</div>
+                <div class="icon-box" style="background: rgba(148, 163, 184, 0.1); color: var(--text-muted);"><i data-lucide="shopping-cart"></i></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">PROCUREMENT</span>
+                <div id="cost-val" style="font-size: 1.6rem; font-weight: 700; margin-top: 5px;">$0</div>
             </div>
             <div class="stat-card" style="background: var(--sidebar-bg); color: white;">
                 <div class="icon-box" style="background: var(--primary); color: white;"><i data-lucide="percent"></i></div>
-                <span style="font-size: 0.8rem; color: #94a3b8;">PROFIT MARGIN</span>
-                <div id="margin-val" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">0%</div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: #94a3b8;">PROFIT MARGIN</span>
+                <div id="margin-val" style="font-size: 1.6rem; font-weight: 700; color: var(--primary); margin-top: 5px;">0%</div>
             </div>
             <div class="stat-card">
-                <div class="icon-box" style="background: rgba(243, 156, 18, 0.1); color: var(--secondary);"><i data-lucide="trash"></i></div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">SPOILAGE</span>
-                <div id="waste-val" style="font-size: 1.5rem; font-weight: 700;">$0</div>
+                <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="trash-2"></i></div>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">WASTE LOSS</span>
+                <div id="waste-val" style="font-size: 1.6rem; font-weight: 700; margin-top: 5px;">$0</div>
             </div>
         </div>
 
         <div class="layout-grid">
             <div class="content-card">
-                <h2 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Revenue Performance</h2>
-                <div style="height: 320px;"><canvas id="mainChart"></canvas></div>
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Performance Analytics</h2>
+                <div style="height: 350px;"><canvas id="mainChart"></canvas></div>
             </div>
 
             <div class="content-card">
-                <h2 style="font-size: 1.1rem; margin-bottom: 1.2rem;">Inventory Focus</h2>
-                <div class="item-row">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?w=80" class="img-thumb">
-                        <div><p style="font-weight: 600; font-size: 0.9rem;">Navel Oranges</p><p style="font-size: 0.7rem; color: var(--text-muted);">Stock: 4kg</p></div>
-                    </div>
-                    <span class="badge low">Low</span>
-                </div>
-                <div class="item-row">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=80" class="img-thumb">
-                        <div><p style="font-weight: 600; font-size: 0.9rem;">Potatoes</p><p style="font-size: 0.7rem; color: var(--text-muted);">Stock: 140kg</p></div>
-                    </div>
-                    <span class="badge good">Good</span>
-                </div>
-                <div class="item-row">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="https://images.unsplash.com/photo-1610397648930-477b8c7f0943?w=80" class="img-thumb">
-                        <div><p style="font-weight: 600; font-size: 0.9rem;">Apples (Red)</p><p style="font-size: 0.7rem; color: var(--text-muted);">Stock: 22kg</p></div>
-                    </div>
-                    <span class="badge good">Good</span>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        lucide.createIcons();
-
-        // 1. DATA REPOSITORY
-        const storeDB = {
-            daily: { rev: 4200, cost: 1800, waste: 85, labels: ['8am', '12pm', '4pm', '8pm'], sales: [800, 1500, 1200, 700], purch: [1200, 0, 400, 0] },
-            monthly: { rev: 125000, cost: 52000, waste: 2100, labels: ['W1', 'W2', 'W3', 'W4'], sales: [28000, 35000, 31000, 31000], purch: [20000, 10000, 12000, 10000] },
-            yearly: { rev: 1640000, cost: 720000, waste: 18400, labels: ['Q1', 'Q2', 'Q3', 'Q4'], sales: [380000, 420000, 390000, 450000], purch: [200000, 150000, 180000, 190000] }
-        };
-
-        // 2. CHART INITIALIZATION
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        let chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: storeDB.daily.labels,
-                datasets: [
-                    { label: 'Revenue', data: storeDB.daily.sales, backgroundColor: '#2ecc71', borderRadius: 5 },
-                    { label: 'Purchases', data: storeDB.daily.purch, backgroundColor: '#cbd5e1', borderRadius: 5 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-
-        // 3. CORE FUNCTIONS
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        }
-
-        function changeView(view, btn) {
-            document.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('view-indicator').innerText = view.charAt(0).toUpperCase() + view.slice(1);
-
-            const d = storeDB[view];
-            
-            // Auto-Calculate Margin: ((Rev - Cost) / Rev) * 100
-            const margin = (((d.rev - d.cost) / d.rev) * 100).toFixed(1);
-
-            // Update Cards
-            const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-            document.getElementById('rev-val').innerText = fmt(d.rev);
-            document.getElementById('cost-val').innerText = fmt(d.cost);
-            document.getElementById('waste-val').innerText = fmt(d.waste);
-            document.getElementById('margin-val').innerText = margin + "%";
-
-            // Update Chart
-            chart.data.labels = d.labels;
-            chart.data.datasets[0].data = d.sales;
-            chart.data.datasets[1].data = d.purch;
-            chart.update();
-        }
-
-        // Init
-        window.onload = () => changeView('daily', document.querySelector('.btn-toggle.active'));
-    </script>
-</body>
-</html>            height: 100vh;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px;
-            color: #94a3b8;
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            transition: 0.2s;
-        }
-
-        .nav-link.active, .nav-link:hover {
-            background: rgba(46, 204, 113, 0.15);
-            color: var(--primary);
-        }
-
-        /* Main Workspace */
-        main { flex: 1; padding: 2rem; overflow-y: auto; }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        /* Cards & Bento */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-
-        .stat-card .icon-box {
-            width: 40px; height: 40px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        /* Dashboard Grid */
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .content-card {
-            background: var(--card-bg);
-            padding: 1.8rem;
-            border-radius: 24px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
-        }
-
-        /* Custom Table & Items */
-        .item-list { margin-top: 1rem; }
-        .item-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 0; border-bottom: 1px solid #f1f5f9;
-        }
-
-        .img-thumb { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }
-
-        .btn-group { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; }
-        .btn-toggle {
-            padding: 6px 16px; border: none; border-radius: 8px; cursor: pointer;
-            font-size: 0.85rem; font-weight: 600; background: transparent; color: var(--text-muted);
-        }
-        .btn-toggle.active { background: white; color: var(--primary-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-        .low { background: #fee2e2; color: #ef4444; }
-        .good { background: #dcfce7; color: #22c55e; }
-
-        @media (max-width: 1100px) { .layout-grid { grid-template-columns: 1fr; } }
-    </style>
-</head>
-<body>
-
-    <aside>
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 3rem; font-weight: 700; font-size: 1.4rem;">
-            <i data-lucide="shopping-cart" style="color: var(--primary);"></i> FreshTrack
-        </div>
-        <nav>
-            <a href="#" class="nav-link active"><i data-lucide="pie-chart"></i> Dashboard</a>
-            <a href="#" class="nav-link"><i data-lucide="package"></i> Stock Management</a>
-            <a href="#" class="nav-link"><i data-lucide="users"></i> Customers</a>
-            <a href="#" class="nav-link"><i data-lucide="file-text"></i> Invoices</a>
-            <a href="#" class="nav-link"><i data-lucide="settings"></i> System</a>
-        </nav>
-    </aside>
-
-    <main>
-        <header class="header">
-            <div>
-                <h1 style="font-size: 1.8rem; font-weight: 700;">Market Analytics</h1>
-                <p style="color: var(--text-muted);">Real-time performance for Market St. Branch</p>
-            </div>
-            <div class="btn-group">
-                <button class="btn-toggle active" onclick="changeView('daily', this)">Daily</button>
-                <button class="btn-toggle" onclick="changeView('monthly', this)">Monthly</button>
-                <button class="btn-toggle" onclick="changeView('yearly', this)">Yearly</button>
-            </div>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="icon-box" style="background: rgba(46, 204, 113, 0.1); color: var(--primary);"><i data-lucide="trending-up"></i></div>
-                <span style="color: var(--text-muted); font-size: 0.9rem;">Total Revenue</span>
-                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 5px;">$8,421.50</div>
-                <div style="color: #22c55e; font-size: 0.8rem; margin-top: 8px;">↑ 12.5% vs last week</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="shopping-bag"></i></div>
-                <span style="color: var(--text-muted); font-size: 0.9rem;">Procurement Cost</span>
-                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 5px;">$2,840.00</div>
-                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 8px;">Stock restock pending</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-box" style="background: rgba(243, 156, 18, 0.1); color: var(--secondary);"><i data-lucide="alert-circle"></i></div>
-                <span style="color: var(--text-muted); font-size: 0.9rem;">Spoilage/Waste</span>
-                <div style="font-size: 1.8rem; font-weight: 700; margin-top: 5px;">$142.20</div>
-                <div style="color: var(--danger); font-size: 0.8rem; margin-top: 8px;">Critical: Bananas & Grapes</div>
-            </div>
-        </div>
-
-        <div class="layout-grid">
-            <div class="content-card">
-                <div style="margin-bottom: 2rem;">
-                    <h2 style="font-size: 1.2rem;">Revenue vs Purchase Trends</h2>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Comparing income to stock investment</p>
-                </div>
-                <div style="height: 350px;">
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
-
-            <div class="content-card">
-                <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Stock Status</h2>
-                <div class="item-list">
+                <h2 style="font-size: 1.2rem; margin-bottom: 1.2rem;">Inventory Alerts</h2>
+                <div id="inventory-box">
                     <div class="item-row">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=100&q=80" class="img-thumb" alt="Potato">
-                            <div><p style="font-weight: 600;">Idaho Potatoes</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 450kg</p></div>
-                        </div>
-                        <span class="badge good">In Stock</span>
-                    </div>
-                    <div class="item-row">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=100&q=80" class="img-thumb" alt="Tomato">
-                            <div><p style="font-weight: 600;">Organic Tomatoes</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 12kg</p></div>
+                            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?w=80" class="img-thumb">
+                            <div><p style="font-weight: 600; font-size: 0.9rem;">Fresh Oranges</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 4.2kg</p></div>
                         </div>
                         <span class="badge low">Low Stock</span>
                     </div>
                     <div class="item-row">
                         <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1464960350423-9f886830e105?w=100&q=80" class="img-thumb" alt="Strawberry">
-                            <div><p style="font-weight: 600;">Strawberries</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 8 boxes</p></div>
+                            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=80" class="img-thumb">
+                            <div><p style="font-weight: 600;">Potatoes (Brown)</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 142kg</p></div>
+                        </div>
+                        <span class="badge good">In Stock</span>
+                    </div>
+                    <div class="item-row">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=80" class="img-thumb">
+                            <div><p style="font-weight: 600;">Cherry Tomatoes</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 1kg</p></div>
                         </div>
                         <span class="badge low">Critical</span>
-                    </div>
-                    <div class="item-row">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=100&q=80" class="img-thumb" alt="Avocado">
-                            <div><p style="font-weight: 600;">Hass Avocado</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 85 units</p></div>
-                        </div>
-                        <span class="badge good">In Stock</span>
-                    </div>
-                    <div class="item-row">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <img src="https://images.unsplash.com/photo-1563513331624-382c070fd73b?w=100&q=80" class="img-thumb" alt="Pepper">
-                            <div><p style="font-weight: 600;">Bell Peppers (Mix)</p><p style="font-size: 0.75rem; color: var(--text-muted);">Stock: 40kg</p></div>
-                        </div>
-                        <span class="badge good">In Stock</span>
                     </div>
                 </div>
             </div>
@@ -430,73 +240,64 @@
     </main>
 
     <script>
+        // Initialize Icons
         lucide.createIcons();
 
-        const dataSets = {
-            daily: {
-                labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'],
-                sales: [400, 850, 1200, 900, 1500, 2100, 600],
-                purchases: [1500, 0, 0, 0, 200, 0, 0]
-            },
-            monthly: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                sales: [18000, 22000, 19500, 26000],
-                purchases: [12000, 8000, 15000, 9000]
-            },
-            yearly: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                sales: [120000, 150000, 135000, 190000],
-                purchases: [80000, 90000, 75000, 60000]
-            }
+        // Data Storage
+        const db = {
+            daily: { rev: 5200, cost: 2100, waste: 120, labels: ['8am', '12pm', '4pm', '8pm'], sales: [800, 1500, 1800, 1100], purch: [2000, 0, 100, 0] },
+            monthly: { rev: 142000, cost: 58000, waste: 3400, labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], sales: [32000, 38000, 31000, 41000], purch: [20000, 12000, 15000, 11000] },
+            yearly: { rev: 1850000, cost: 740000, waste: 22000, labels: ['Q1', 'Q2', 'Q3', 'Q4'], sales: [420000, 480000, 410000, 540000], purch: [200000, 180000, 220000, 140000] }
         };
 
-        const ctx = document.getElementById('performanceChart').getContext('2d');
-        let perfChart = new Chart(ctx, {
-            type: 'bar', // Mixed chart
+        // Chart Init
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        let mainChart = new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: dataSets.daily.labels,
+                labels: db.daily.labels,
                 datasets: [
-                    {
-                        type: 'bar',
-                        label: 'Sales Revenue',
-                        data: dataSets.daily.sales,
-                        backgroundColor: '#2ecc71',
-                        borderRadius: 8,
-                        order: 2
-                    },
-                    {
-                        type: 'line',
-                        label: 'Purchase Cost',
-                        data: dataSets.daily.purchases,
-                        borderColor: '#94a3b8',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#ffffff',
-                        fill: false,
-                        tension: 0.4,
-                        order: 1
-                    }
+                    { label: 'Revenue', data: db.daily.sales, backgroundColor: '#2ecc71', borderRadius: 6 },
+                    { label: 'Purchases', data: db.daily.purch, backgroundColor: '#cbd5e1', borderRadius: 6 }
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { position: 'bottom' } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                    x: { grid: { display: false } }
-                }
+                scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
             }
         });
 
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // View Controller
         function changeView(view, btn) {
             document.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            document.getElementById('view-label').innerText = view.charAt(0).toUpperCase() + view.slice(1);
 
-            perfChart.data.labels = dataSets[view].labels;
-            perfChart.data.datasets[0].data = dataSets[view].sales;
-            perfChart.data.datasets[1].data = dataSets[view].purchases;
-            perfChart.update();
+            const d = db[view];
+            const margin = (((d.rev - d.cost) / d.rev) * 100).toFixed(1);
+
+            // Update Cards
+            const format = (v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+            document.getElementById('rev-val').innerText = format(d.rev);
+            document.getElementById('cost-val').innerText = format(d.cost);
+            document.getElementById('waste-val').innerText = format(d.waste);
+            document.getElementById('margin-val').innerText = margin + "%";
+
+            // Update Chart
+            mainChart.data.labels = d.labels;
+            mainChart.data.datasets[0].data = d.sales;
+            mainChart.data.datasets[1].data = d.purch;
+            mainChart.update();
         }
+
+        // Load Default
+        window.onload = () => changeView('daily', document.querySelector('.btn-toggle.active'));
     </script>
 </body>
 </html>

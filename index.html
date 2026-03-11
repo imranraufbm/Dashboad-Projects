@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imran Rauf | Project Command</title>
+    <title>FreshTrack | Green Grocer Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #00f7ff;
-            --bg-body: #050a0f;
-            --surface: rgba(16, 25, 35, 0.9);
-            --border: rgba(255, 255, 255, 0.1);
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --secondary: #f39c12; /* Carrot Orange */
+            --danger: #e74c3c; /* Tomato Red */
+            --bg-main: #f8fafc;
+            --sidebar: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background: var(--bg-main); color: var(--text-dark); display: flex; min-height: 100vh; }
 
-        /* Sidebar - Fixed width for desktop */
-        .sidebar {
+        /* Sidebar Navigation */
+        aside {
             width: 260px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
+            background: var(--sidebar);
+            border-right: 1px solid #e2e8f0;
             padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
@@ -34,122 +37,214 @@
             height: 100vh;
         }
 
-        .main-wrapper { flex: 1; padding: 2rem; width: 100%; max-width: 1400px; margin: 0 auto; }
-
-        /* FIXED BENTO GRID - Controlled Columns */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            grid-auto-flow: dense;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 3rem;
         }
 
-        .bento-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            position: relative;
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 8px;
             transition: 0.3s;
         }
 
-        .col-span-2 { grid-column: span 2; }
-        
-        @media (max-width: 900px) {
-            .col-span-2 { grid-column: span 1; }
-            .sidebar { display: none; }
+        .nav-link.active, .nav-link:hover {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--primary-dark);
         }
 
-        /* Upload Area Styling */
-        .upload-zone {
-            border: 2px dashed var(--border);
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
+        /* Main Workspace */
+        main { flex: 1; padding: 2.5rem; overflow-x: hidden; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 2rem;
-            background: rgba(255, 255, 255, 0.02);
         }
 
-        .upload-zone:hover { border-color: var(--primary); background: rgba(0, 247, 255, 0.05); }
-
-        #file-input { display: none; }
-
-        .project-card {
-            background: var(--surface);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border);
+        /* Stats Grid */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .project-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #1a202c;
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9;
         }
 
-        .project-info { padding: 1rem; }
+        .stat-card h3 { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
+        .stat-card .trend { font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+        .trend.up { color: var(--primary); }
 
-        .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
-        .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        /* Dashboard Layout */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
 
+        .content-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Charts & Lists */
+        .filter-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .filter-btn.active { background: var(--primary-dark); color: white; }
+
+        .inventory-list { margin-top: 1rem; }
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .item-img { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-low { background: #fee2e2; color: var(--danger); }
+        .badge-ok { background: #dcfce7; color: var(--primary-dark); }
+
+        @media (max-width: 1024px) {
+            .grid-layout { grid-template-columns: 1fr; }
+            aside { width: 80px; padding: 1.5rem 0.5rem; }
+            aside .logo span, aside .nav-link span { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div style="color: var(--primary); font-family: 'Fira Code'; margin-bottom: 3rem; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-            <i data-lucide="layout"></i> DASH.AI
+    <aside>
+        <div class="logo">
+            <i data-lucide="leaf"></i> <span>FreshTrack</span>
         </div>
         <nav>
-            <div style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.8rem;">MENU</div>
-            <a href="#" style="display: flex; gap: 12px; color: var(--primary); text-decoration: none; margin-bottom: 15px;"><i data-lucide="home"></i> Overview</a>
-            <a href="#" style="display: flex; gap: 12px; color: var(--text-muted); text-decoration: none; margin-bottom: 15px;"><i data-lucide="layers"></i> Projects</a>
+            <a href="#" class="nav-link active"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
+            <a href="#" class="nav-link"><i data-lucide="shopping-basket"></i> <span>Inventory</span></a>
+            <a href="#" class="nav-link"><i data-lucide="line-chart"></i> <span>Sales Reports</span></a>
+            <a href="#" class="nav-link"><i data-lucide="truck"></i> <span>Suppliers</span></a>
+            <a href="#" class="nav-link"><i data-lucide="settings"></i> <span>Settings</span></a>
         </nav>
     </aside>
 
-    <main class="main-wrapper">
-        <header style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
-            <h1>Executive Dashboard</h1>
-            <div style="background: var(--surface); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--border);">
-                System Status: <span style="color: #4ade80;">Online</span>
+    <main>
+        <header class="header">
+            <div>
+                <h1 style="font-size: 1.8rem;">Sales Overview</h1>
+                <p style="color: var(--text-light);">Market St. Branch • March 11, 2026</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="filter-btn active" onclick="updateChart('daily')">Daily</button>
+                <button class="filter-btn" onclick="updateChart('monthly')">Monthly</button>
+                <button class="filter-btn" onclick="updateChart('yearly')">Yearly</button>
             </div>
         </header>
 
-        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-            <i data-lucide="upload-cloud" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 10px;"></i>
-            <p>Click to Upload Project Poster</p>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Format: JPG, PNG • Max: 5MB</span>
-            <input type="file" id="file-input" accept="image/*">
+        <div class="stats-row">
+            <div class="stat-card">
+                <h3>Total Sales</h3>
+                <div class="value">$4,280.50</div>
+                <div class="trend up"><i data-lucide="arrow-up-right"></i> +14% vs last period</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Purchase</h3>
+                <div class="value">$1,150.00</div>
+                <div class="trend" style="color: var(--text-light);">Inventory Restock</div>
+            </div>
+            <div class="stat-card">
+                <h3>Customer Count</h3>
+                <div class="value">142</div>
+                <div class="trend up"><i data-lucide="users"></i> New peak reached</div>
+            </div>
+            <div class="stat-card">
+                <h3>Avg. Basket</h3>
+                <div class="value">$30.15</div>
+                <div class="trend up"><i data-lucide="trending-up"></i> Improved</div>
+            </div>
         </div>
 
-        <div class="dashboard-grid" id="project-container">
-            <div class="bento-item">
-                <span class="label">Total Projects</span>
-                <div class="stat-val" id="project-count">2</div>
-            </div>
-
-            <div class="bento-item col-span-2">
-                <span class="label">Weekly Productivity</span>
-                <canvas id="miniChart" height="80"></canvas>
-            </div>
-
-            <div class="project-card">
-                <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=400" class="project-img">
-                <div class="project-info">
-                    <h4 style="color: var(--primary);">Neon Genesis</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">AI Concept Art Collection</p>
+        <div class="grid-layout">
+            <div class="content-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.1rem;">Revenue Performance</h2>
+                    <i data-lucide="more-horizontal" style="color: var(--text-light); cursor: pointer;"></i>
                 </div>
+                <canvas id="salesChart" height="250"></canvas>
             </div>
 
-            <div class="project-card">
-                <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&q=80&w=400" class="project-img">
-                <div class="project-info">
-                    <h4 style="color: var(--primary);">Cyber-Director</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Automated Film Rig</p>
+            <div class="content-box">
+                <h2 style="font-size: 1.1rem; margin-bottom: 1.5rem;">Inventory Alerts</h2>
+                <div class="inventory-list">
+                    <div class="item-row">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?w=100" class="item-img" alt="Oranges">
+                            <div>
+                                <p style="font-weight: 600; font-size: 0.9rem;">Navel Oranges</p>
+                                <p style="font-size: 0.8rem; color: var(--text-light);">4kg left</p>
+                            </div>
+                        </div>
+                        <span class="badge badge-low">Low Stock</span>
+                    </div>
+
+                    <div class="item-row">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=100" class="item-img" alt="Potatoes">
+                            <div>
+                                <p style="font-weight: 600; font-size: 0.9rem;">Russet Potatoes</p>
+                                <p style="font-size: 0.8rem; color: var(--text-light);">120kg left</p>
+                            </div>
+                        </div>
+                        <span class="badge badge-ok">Healthy</span>
+                    </div>
+
+                    <div class="item-row">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?w=100" class="item-img" alt="Broccoli">
+                            <div>
+                                <p style="font-weight: 600; font-size: 0.9rem;">Fresh Broccoli</p>
+                                <p style="font-size: 0.8rem; color: var(--text-light);">2kg left</p>
+                            </div>
+                        </div>
+                        <span class="badge badge-low">Reorder</span>
+                    </div>
                 </div>
+                <button style="width: 100%; padding: 12px; margin-top: 1.5rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; cursor: pointer; color: var(--text-light);">View Full Inventory</button>
             </div>
         </div>
     </main>
@@ -157,54 +252,69 @@
     <script>
         lucide.createIcons();
 
-        // Chart Setup
-        const ctx = document.getElementById('miniChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
+        // Chart Data Configurations
+        const chartData = {
+            daily: {
+                labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'],
+                sales: [120, 450, 800, 600, 950, 1100, 260],
+                purchase: [500, 0, 0, 0, 0, 650, 0]
+            },
+            monthly: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                sales: [12000, 15000, 11000, 18000],
+                purchase: [8000, 2000, 5000, 3000]
+            },
+            yearly: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                sales: [54000, 62000, 48000, 75000],
+                purchase: [20000, 18000, 22000, 15000]
+            }
+        };
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        let salesChart = new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                datasets: [{
-                    data: [12, 19, 15, 25, 22, 30, 20],
-                    borderColor: '#00f7ff',
-                    tension: 0.4,
-                    fill: false,
-                    pointRadius: 0
-                }]
+                labels: chartData.daily.labels,
+                datasets: [
+                    {
+                        label: 'Sales Revenue ($)',
+                        data: chartData.daily.sales,
+                        backgroundColor: '#2ecc71',
+                        borderRadius: 8,
+                    },
+                    {
+                        label: 'Purchasing Cost ($)',
+                        data: chartData.daily.purchase,
+                        backgroundColor: '#cbd5e1',
+                        borderRadius: 8,
+                    }
+                ]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
-            }
-        });
-
-        // IMAGE UPLOAD FUNCTIONALITY
-        const fileInput = document.getElementById('file-input');
-        const container = document.getElementById('project-container');
-        const countDisplay = document.getElementById('project-count');
-        let count = 2;
-
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const newProject = document.createElement('div');
-                    newProject.className = 'project-card';
-                    newProject.innerHTML = `
-                        <img src="${e.target.result}" class="project-img">
-                        <div class="project-info">
-                            <h4 style="color: var(--primary);">New Venture</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Recently Uploaded Project</p>
-                        </div>
-                    `;
-                    container.appendChild(newProject);
-                    count++;
-                    countDisplay.innerText = count;
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Outfit' } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Outfit' } } },
+                    x: { grid: { display: false }, ticks: { font: { family: 'Outfit' } } }
                 }
-                reader.readAsDataURL(file);
             }
         });
+
+        function updateChart(type) {
+            // Update UI buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update Chart Data
+            salesChart.data.labels = chartData[type].labels;
+            salesChart.data.datasets[0].data = chartData[type].sales;
+            salesChart.data.datasets[1].data = chartData[type].purchase;
+            salesChart.update();
+        }
     </script>
 </body>
 </html>
